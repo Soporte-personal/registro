@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historia Clínica — Consultorio Psicológico</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sage:#7a9e87;--sage-light:#a8c5b0;--sage-dark:#4d7a5e;
+  --cream:#f7f3ee;--warm-white:#fdfaf6;
+  --charcoal:#2c2c2c;--mid-gray:#6b6b6b;--light-gray:#e8e4df;
+  --accent:#c07a5a;--accent-light:#dea98e;
+  --danger:#b85c5c;--info:#5a7fb8;
+  --shadow:0 2px 20px rgba(44,44,44,0.08);
+  --radius:12px;--radius-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--charcoal);min-height:100vh;overflow-x:hidden;}
+
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#e8f0ea 0%,#f7f3ee 50%,#ede8e0 100%);position:relative;}
+#login-screen::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 50%,rgba(122,158,135,0.15) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 20%,rgba(192,122,90,0.08) 0%,transparent 50%);pointer-events:none;}
+.login-card{background:var(--warm-white);border-radius:20px;padding:52px 48px;width:440px;
+  box-shadow:0 8px 60px rgba(44,44,44,0.12);position:relative;z-index:1;}
+.login-logo{text-align:center;margin-bottom:36px;}
+.login-logo .icon{width:56px;height:56px;background:linear-gradient(135deg,var(--sage),var(--sage-dark));
+  border-radius:16px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:26px;}
+.login-logo h1{font-family:'Lora',serif;font-size:22px;color:var(--charcoal);line-height:1.3;}
+.login-logo p{font-size:13px;color:var(--mid-gray);margin-top:4px;}
+
+/* FORMS */
+.form-group{margin-bottom:20px;}
+.form-group label{display:block;font-size:12px;font-weight:600;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--mid-gray);margin-bottom:8px;}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:12px 16px;border:1.5px solid var(--light-gray);border-radius:var(--radius-sm);
+  font-family:'DM Sans',sans-serif;font-size:15px;background:var(--warm-white);color:var(--charcoal);
+  outline:none;transition:border-color .2s,box-shadow .2s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{
+  border-color:var(--sage);box-shadow:0 0 0 3px rgba(122,158,135,0.15);}
+textarea.form-control{resize:vertical;min-height:80px;width:100%;padding:10px 14px;
+  border:1.5px solid var(--light-gray);border-radius:var(--radius-sm);
+  font-family:'DM Sans',sans-serif;font-size:14px;background:var(--warm-white);
+  color:var(--charcoal);outline:none;transition:border-color .2s;}
+textarea.form-control:focus{border-color:var(--sage);box-shadow:0 0 0 3px rgba(122,158,135,0.15);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border:none;
+  border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;text-decoration:none;}
+.btn-primary{background:linear-gradient(135deg,var(--sage),var(--sage-dark));color:white;justify-content:center;}
+.btn-primary:hover{filter:brightness(1.05);box-shadow:0 4px 20px rgba(77,122,94,0.3);}
+.btn-primary.full{width:100%;padding:14px;}
+.btn-secondary{background:var(--light-gray);color:var(--charcoal);}
+.btn-secondary:hover{background:#ddd9d3;}
+.btn-danger{background:var(--danger);color:white;}
+.btn-danger:hover{filter:brightness(1.05);}
+.btn-sm{padding:7px 14px;font-size:13px;}
+.btn-ghost{background:transparent;color:var(--sage-dark);border:1.5px solid var(--sage-light);}
+.btn-ghost:hover{background:rgba(122,158,135,0.08);}
+.btn-warning{background:#c09a30;color:white;}
+.btn-warning:hover{filter:brightness(1.05);}
+#login-error{background:#fde8e8;color:var(--danger);border-radius:var(--radius-sm);
+  padding:10px 14px;font-size:13px;margin-bottom:16px;display:none;}
+
+/* SIDEBAR */
+#app{display:none;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:var(--charcoal);
+  display:flex;flex-direction:column;z-index:100;}
+.sidebar-header{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sidebar-header .brand{display:flex;align-items:center;gap:12px;}
+.sidebar-header .brand-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--sage),var(--sage-dark));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.sidebar-header .brand-text h2{font-family:'Lora',serif;font-size:15px;color:white;line-height:1.2;}
+.sidebar-header .brand-text p{font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px;}
+.sidebar-user{padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.user-badge{display:flex;align-items:center;gap:10px;}
+.user-avatar{width:34px;height:34px;background:linear-gradient(135deg,var(--accent-light),var(--accent));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:white;}
+.user-info p:first-child{font-size:13px;color:white;font-weight:500;}
+.user-info p:last-child{font-size:11px;color:rgba(255,255,255,0.4);}
+.role-tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;
+  letter-spacing:.04em;text-transform:uppercase;}
+.role-admin{background:rgba(192,122,90,0.25);color:var(--accent-light);}
+.role-psicologo{background:rgba(122,158,135,0.25);color:var(--sage-light);}
+.role-medico{background:rgba(90,127,184,0.25);color:#93b8f0;}
+.role-otro{background:rgba(180,180,180,0.2);color:rgba(255,255,255,0.6);}
+nav{flex:1;padding:16px 0;overflow-y:auto;}
+.nav-section-label{padding:8px 24px 4px;font-size:10px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:rgba(255,255,255,0.25);}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 24px;color:rgba(255,255,255,0.55);
+  cursor:pointer;transition:all .15s;font-size:14px;border-left:3px solid transparent;user-select:none;}
+.nav-item:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.85);}
+.nav-item.active{background:rgba(122,158,135,0.15);color:var(--sage-light);border-left-color:var(--sage);}
+.nav-item .nav-icon{font-size:16px;width:20px;text-align:center;}
+.sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,0.08);}
+.btn-logout{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.4);font-size:13px;
+  cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;transition:color .2s;padding:0;}
+.btn-logout:hover{color:rgba(255,255,255,0.8);}
+
+/* SYNC indicator */
+.sync-status{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.35);
+  padding:8px 24px 0;}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--mid-gray);}
+.sync-dot.syncing{background:#f0c040;animation:pulse 1s infinite;}
+.sync-dot.ok{background:var(--sage);}
+.sync-dot.error{background:var(--danger);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+/* MAIN */
+.main-content{margin-left:260px;min-height:100vh;padding:32px;}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;}
+.page-header h1{font-family:'Lora',serif;font-size:28px;color:var(--charcoal);}
+.page-header p{font-size:14px;color:var(--mid-gray);margin-top:4px;}
+.page-header-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+
+/* CARD */
+.card{background:var(--warm-white);border-radius:var(--radius);padding:24px;
+  box-shadow:var(--shadow);border:1px solid rgba(232,228,223,0.8);}
+.card-title{font-family:'Lora',serif;font-size:17px;color:var(--charcoal);margin-bottom:16px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:28px;}
+.stat-card{background:var(--warm-white);border-radius:var(--radius);padding:20px 24px;
+  box-shadow:var(--shadow);border:1px solid rgba(232,228,223,0.8);display:flex;align-items:center;gap:16px;}
+.stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.stat-icon.green{background:rgba(122,158,135,0.12);}
+.stat-icon.orange{background:rgba(192,122,90,0.12);}
+.stat-icon.blue{background:rgba(90,127,184,0.12);}
+.stat-icon.purple{background:rgba(150,100,200,0.12);}
+.stat-number{font-size:26px;font-weight:600;color:var(--charcoal);}
+.stat-label{font-size:12px;color:var(--mid-gray);margin-top:2px;}
+
+/* TABLE */
+.table-wrapper{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--mid-gray);padding:10px 16px;border-bottom:1.5px solid var(--light-gray);
+  background:rgba(247,243,238,0.5);}
+tbody tr{transition:background .15s;}
+tbody tr:hover{background:rgba(122,158,135,0.04);}
+tbody td{padding:13px 16px;font-size:14px;border-bottom:1px solid rgba(232,228,223,0.6);vertical-align:middle;}
+.table-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.search-box{position:relative;flex:1;min-width:220px;}
+.search-box input{padding-left:38px!important;}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--mid-gray);
+  font-size:15px;pointer-events:none;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(44,44,44,0.45);backdrop-filter:blur(4px);
+  z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;}
+.modal{background:var(--warm-white);border-radius:16px;width:100%;max-width:700px;
+  box-shadow:0 20px 80px rgba(44,44,44,0.2);animation:modalIn .2s ease;}
+@keyframes modalIn{from{opacity:0;transform:translateY(-16px) scale(.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+.modal-header{padding:24px 28px 20px;border-bottom:1px solid var(--light-gray);
+  display:flex;align-items:center;justify-content:space-between;}
+.modal-header h2{font-family:'Lora',serif;font-size:20px;}
+.modal-close{background:none;border:none;cursor:pointer;font-size:20px;color:var(--mid-gray);
+  line-height:1;padding:4px;transition:color .15s;}
+.modal-close:hover{color:var(--charcoal);}
+.modal-body{padding:24px 28px;max-height:70vh;overflow-y:auto;}
+.modal-footer{padding:16px 28px 24px;display:flex;gap:10px;justify-content:flex-end;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-grid .span2{grid-column:1/-1;}
+
+/* BADGE */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-green{background:rgba(122,158,135,0.15);color:var(--sage-dark);}
+.badge-orange{background:rgba(192,122,90,0.15);color:#9a5c38;}
+.badge-gray{background:var(--light-gray);color:var(--mid-gray);}
+
+/* FIELD BUILDER */
+.field-builder{border:1.5px dashed var(--sage-light);border-radius:var(--radius-sm);
+  padding:16px;background:rgba(122,158,135,0.04);margin-top:12px;}
+.custom-field-item{display:flex;align-items:center;gap:10px;padding:8px 12px;
+  background:var(--warm-white);border-radius:6px;border:1px solid var(--light-gray);margin-bottom:8px;}
+.custom-field-item .field-label{flex:1;font-size:13px;}
+.custom-field-item .field-type{font-size:11px;color:var(--mid-gray);background:var(--light-gray);
+  padding:2px 8px;border-radius:4px;}
+
+/* MODULE CARDS */
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:24px;}
+.module-card{background:var(--warm-white);border-radius:var(--radius);padding:20px;
+  box-shadow:var(--shadow);border:1px solid rgba(232,228,223,0.8);display:flex;flex-direction:column;gap:12px;}
+.module-card-header{display:flex;align-items:center;gap:12px;}
+.module-card-icon{width:42px;height:42px;border-radius:10px;
+  background:linear-gradient(135deg,rgba(122,158,135,0.15),rgba(122,158,135,0.05));
+  display:flex;align-items:center;justify-content:center;font-size:22px;}
+.module-card-title{font-family:'Lora',serif;font-size:15px;font-weight:600;}
+.module-card-desc{font-size:12px;color:var(--mid-gray);}
+.module-card-actions{display:flex;gap:8px;margin-top:auto;}
+.system-badge{font-size:10px;background:var(--light-gray);color:var(--mid-gray);padding:2px 8px;border-radius:20px;}
+
+/* LOADING OVERLAY */
+#loading-overlay{position:fixed;inset:0;background:rgba(247,243,238,0.92);backdrop-filter:blur(6px);
+  z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.spinner{width:40px;height:40px;border:3px solid var(--light-gray);border-top-color:var(--sage);
+  border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#loading-overlay p{font-size:14px;color:var(--mid-gray);}
+
+/* TOAST */
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--charcoal);color:white;padding:12px 20px;border-radius:10px;font-size:14px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.2);animation:toastIn .3s ease;display:flex;align-items:center;gap:10px;}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+.toast.success{border-left:3px solid var(--sage);}
+.toast.error{border-left:3px solid var(--danger);}
+.toast.info{border-left:3px solid var(--info);}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:48px 24px;color:var(--mid-gray);}
+.empty-state .empty-icon{font-size:40px;margin-bottom:12px;}
+.empty-state p{font-size:15px;}
+.empty-state small{font-size:13px;opacity:.7;}
+
+/* SECTIONS */
+.section{display:none;}
+.section.active{display:block;}
+
+/* SHEETS NOTICE */
+.sheets-banner{background:linear-gradient(135deg,rgba(66,133,244,0.08),rgba(66,133,244,0.03));
+  border:1.5px solid rgba(66,133,244,0.25);border-radius:var(--radius);
+  padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;font-size:13px;color:#1a4a9a;}
+
+@media(max-width:900px){.sidebar{width:220px;}.main-content{margin-left:220px;padding:20px;}
+  .form-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-overlay" style="display:none;">
+  <div class="spinner"></div>
+  <p id="loading-msg">Sincronizando con Google Sheets…</p>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon">🧠</div>
+      <h1>Historia Clínica<br>Psicológica</h1>
+      <p>Consultorio de Salud Mental</p>
+    </div>
+    <div id="login-error">⚠ Usuario o contraseña incorrectos.</div>
+    <div class="form-group">
+      <label>Usuario</label>
+      <input type="text" id="login-user" placeholder="Ingresa tu usuario" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label>Contraseña</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary full" onclick="doLogin()">Ingresar al sistema</button>
+    <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--mid-gray)">
+      admin / admin123 &nbsp;·&nbsp; psicologo / psi123 &nbsp;·&nbsp; medico / med123
+    </p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-icon">🧠</div>
+        <div class="brand-text"><h2>Historia Clínica</h2><p>Sistema de Gestión</p></div>
+      </div>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-badge">
+        <div class="user-avatar" id="sidebar-avatar">--</div>
+        <div class="user-info">
+          <p id="sidebar-name">Usuario</p>
+          <p><span class="role-tag" id="sidebar-role-tag">Rol</span></p>
+        </div>
+      </div>
+    </div>
+    <div class="sync-status">
+      <div class="sync-dot" id="sync-dot"></div>
+      <span id="sync-label">Sin sincronizar</span>
+    </div>
+    <nav id="main-nav"></nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="doLogout()"><span>⬅</span> Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="section" id="sec-dashboard">
+      <div class="page-header">
+        <div><h1>Panel Principal</h1><p>Resumen del consultorio</p></div>
+        <button class="btn btn-ghost btn-sm" onclick="syncAll()">🔄 Sincronizar</button>
+      </div>
+      <div class="sheets-banner">
+        📊 <strong>Google Sheets conectado.</strong> Todos los datos se guardan y leen desde tu hoja de cálculo en tiempo real.
+        <a id="sheets-link" href="#" target="_blank" style="margin-left:auto;color:var(--info);font-weight:600;white-space:nowrap">Abrir Sheets →</a>
+      </div>
+      <div class="stats-grid" id="dashboard-stats"></div>
+      <div class="card">
+        <div class="card-title">📋 Pacientes recientes</div>
+        <div class="table-wrapper">
+          <table><thead><tr><th>Paciente</th><th>Edad</th><th>Registrado</th><th>Acciones</th></tr></thead>
+          <tbody id="recent-patients-table"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="sec-modulos">
+      <div class="page-header">
+        <div><h1>Gestión de Módulos</h1><p>Crear, editar o eliminar módulos del sistema</p></div>
+        <button class="btn btn-primary" onclick="openNewModuleModal()">+ Nuevo módulo</button>
+      </div>
+      <div class="module-grid" id="module-grid"></div>
+    </div>
+
+    <div class="section" id="sec-usuarios">
+      <div class="page-header">
+        <div><h1>Gestión de Usuarios</h1><p>Accesos y roles del sistema</p></div>
+        <button class="btn btn-primary" onclick="openUserModal()">+ Nuevo usuario</button>
+      </div>
+      <div class="card">
+        <div class="table-wrapper">
+          <table><thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Módulos</th><th>Acciones</th></tr></thead>
+          <tbody id="users-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <div id="dynamic-sections"></div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay" class="modal-overlay" style="display:none;" onclick="closeModalOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Modal</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+// ══════════════════════════════════════════════
+//  GOOGLE SHEETS CONFIG
+// ══════════════════════════════════════════════
+const SPREADSHEET_ID = '1SLWkeR1hsCRWr6ngZYF2tcLwBYuFtQ3_Msm2PkPxvaw';
+const SERVICE_ACCOUNT = {
+  client_email: 'historia-clinica-service@historia-490513.iam.gserviceaccount.com',
+  private_key: `-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCcMxW2dl9iriVd
+xQuSZIgBsS/jrg/61SCRY9eMwZjayaT9AfMV1RCnNBuEB9go1lY23zpdH1pQLeMj
+lYn4aEgHYwlrKA0UPU2dmVVG8nHY59Fnw+lqs+lQn/nEUi/haxLozof6dJBeKh96
+7bF0wAFHzeZw8aKPcdtLDWuXtNvqArJF8SMBg7lsP79ZUpTUX1eV8mGj485u8/1p
+Rp0ke0r7KzesxYYlizL1Os4l5xqaKRSzD2SQTD0T3wTTqNC0hqj6EufPs6or9mzp
+fA97sStbj8QgcGAkRZCaqrg3cu/5AlOJw7Qb28F3Eirc+nhPqe489DFSpf3wLePf
+XXouWeRzAgMBAAECggEASrci4TMRIF5FsGtjRCTDa+/KBQILUcPlvrX/8qveRnVi
+7sUidmSDAT/rE4Y/DxWrirbPr6CiLi0s86YBp6mWHrZwWGoBi5dhS4v/Xx70dzk4
+EQcE3Y3ugirrqc1Yat6xXlwAbjyYm/pRMZeGJV78ndCvNIJY7H2dVHK4bwpLkUz2
+b+LidGagBP6ogjLXi/3Y/e7BZkH3XV2XfKAQmpU4CXoCEQ3V5/LEmRI6gDIA32It
+aeXG1mk+6A9TuOOjqmwe0lp3Y2iT7RxES4ibLl8XE3zlYaSj/CNqLSNgdeVNdXgb
+Qw4dr47/wxNjPCvtVLqcxoBCU0O0TpbeDB9UBjU3EQKBgQDP1lU9/OIcUmUl7C2X
+4Gvsia+0VGxMPh/MRvt0pLonGbRi5Tj/csgKh1U0tyUx55psDG0fHXqJj9rrftBn
+TkOszNRZHTeWL8lTBV6DAdc59l2j/am5hJ54xV2k3+8GV+ePKAAuMKvdUs7OoiNT
+QZRAr37chGlFITvzGIB373U8wwKBgQDAZWozO3FNf9hPBDzjhDJKUspZOOqzaQA3
+qko7yVq0qKOOs0GuxqZb9rpiBnMlFGnD6dH6Bf2lNs1XhRKErrPEbQdW2m8uSXwN
+pbvyqzKlMf5bSa8XFUBy5Q2o3zyDGYYQ2GiEL59209YkZYpbfXLMOmtfulC7lR9Z
+EGnrpCP+kQKBgB+VO3ji/9077CD6JeeJc/0K40ds+NQRMLXTJ40PJzaf4liQ6rtu
+ztVCwYD0P9O4lS/MJ5zt1twmnybgK303WHNe4Pn1xaet9VMHYthXpEQrmwk7l9oY
+PBiwLU3Ltb/qBccsVfKu9L76QXEHFIUnVwcJZCbQfErEBR8o3wTav58PAoGACiSO
+j7rfg0VtIuVHTHtIp3Br6H4+qUyszUJ1/WblGEcXsEs0+EDSvmBofQh4A4lq9gAa
+qMKuF4qnEqkaS9Jl+cIBtAt59we6uYF2QhnSZrEXBrsAtwfQyP3YVYHHT+YFklfG
+Usmr73jFfk+4FpCrf6bIyFgrL2hyKaDa5KhXmXECgYEAvBMVbrJH8IV6qURCnTHS
+7uBhBT6rY/Cn4CSRxZNDbWmN1vdGqc/heAL1Cy6HoFPvA99LHthWRU1aQC+SpwNv
+PVtWgBV0Z1zbPxRbpWCAJKy21legN5VS058/1124WuVLKYmlnRaO8TXKIS5b3cLB
+1u6ltRuvVkTLk0Q8rTmvTHs=
+-----END PRIVATE KEY-----`
+};
+
+// ══════════════════════════════════════════════
+//  JWT / OAUTH FOR SERVICE ACCOUNT (pure browser)
+// ══════════════════════════════════════════════
+let _accessToken = null;
+let _tokenExpiry = 0;
+
+async function getAccessToken() {
+  if (_accessToken && Date.now() < _tokenExpiry - 60000) return _accessToken;
+  const now = Math.floor(Date.now() / 1000);
+  const header = { alg: 'RS256', typ: 'JWT' };
+  const claim = {
+    iss: SERVICE_ACCOUNT.client_email,
+    scope: 'https://www.googleapis.com/auth/spreadsheets',
+    aud: 'https://oauth2.googleapis.com/token',
+    exp: now + 3600, iat: now
+  };
+  const b64 = s => btoa(unescape(encodeURIComponent(JSON.stringify(s))))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  const unsigned = b64(header) + '.' + b64(claim);
+  const key = await importPrivateKey(SERVICE_ACCOUNT.private_key);
+  const sig = await crypto.subtle.sign('RSASSA-PKCS1-v1_5', key,
+    new TextEncoder().encode(unsigned));
+  const jwt = unsigned + '.' + btoa(String.fromCharCode(...new Uint8Array(sig)))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  const res = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'},
+    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
+  });
+  const data = await res.json();
+  if (!data.access_token) throw new Error('Token error: ' + JSON.stringify(data));
+  _accessToken = data.access_token;
+  _tokenExpiry = Date.now() + data.expires_in * 1000;
+  return _accessToken;
+}
+
+async function importPrivateKey(pem) {
+  const b64 = pem.replace(/-----BEGIN PRIVATE KEY-----|-----END PRIVATE KEY-----|\n/g,'');
+  const bin = atob(b64);
+  const buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return crypto.subtle.importKey('pkcs8', buf.buffer,
+    { name:'RSASSA-PKCS1-v1_5', hash:'SHA-256' }, false, ['sign']);
+}
+
+// ══════════════════════════════════════════════
+//  SHEETS API HELPERS
+// ══════════════════════════════════════════════
+const API = 'https://sheets.googleapis.com/v4/spreadsheets/' + SPREADSHEET_ID;
+
+async function sheetsGet(range) {
+  const token = await getAccessToken();
+  const r = await fetch(`${API}/values/${encodeURIComponent(range)}`, {
+    headers: { Authorization: 'Bearer ' + token }
+  });
+  const d = await r.json();
+  return d.values || [];
+}
+
+async function sheetsWrite(range, values) {
+  const token = await getAccessToken();
+  const r = await fetch(`${API}/values/${encodeURIComponent(range)}?valueInputOption=RAW`, {
+    method: 'PUT',
+    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ range, majorDimension: 'ROWS', values })
+  });
+  return r.json();
+}
+
+async function sheetsAppend(range, values) {
+  const token = await getAccessToken();
+  const r = await fetch(`${API}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`, {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ range, majorDimension: 'ROWS', values })
+  });
+  return r.json();
+}
+
+async function sheetsClear(range) {
+  const token = await getAccessToken();
+  await fetch(`${API}/values/${encodeURIComponent(range)}:clear`, {
+    method: 'POST', headers: { Authorization: 'Bearer ' + token }
+  });
+}
+
+async function createSheet(title) {
+  const token = await getAccessToken();
+  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`, {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ requests: [{ addSheet: { properties: { title } } }] })
+  });
+}
+
+async function getSheetNames() {
+  const token = await getAccessToken();
+  const r = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}`, {
+    headers: { Authorization: 'Bearer ' + token }
+  });
+  const d = await r.json();
+  return (d.sheets || []).map(s => s.properties.title);
+}
+
+// ══════════════════════════════════════════════
+//  SHEET NAMES (one sheet per module + _config)
+// ══════════════════════════════════════════════
+const CONFIG_SHEET = '_config';
+
+async function ensureSheet(name) {
+  const names = await getSheetNames();
+  if (!names.includes(name)) await createSheet(name);
+}
+
+// ══════════════════════════════════════════════
+//  LOAD / SAVE CONFIG (users + modules + fields)
+// ══════════════════════════════════════════════
+async function loadConfig() {
+  try {
+    await ensureSheet(CONFIG_SHEET);
+    const rows = await sheetsGet(CONFIG_SHEET + '!A1:B1000');
+    const map = {};
+    rows.forEach(r => { if (r[0]) map[r[0]] = r[1]; });
+    if (!map['users']) return null;
+    return {
+      users: JSON.parse(map['users'] || '[]'),
+      modules: JSON.parse(map['modules'] || '[]'),
+      fields: JSON.parse(map['fields'] || '{}')
+    };
+  } catch { return null; }
+}
+
+async function saveConfig() {
+  await ensureSheet(CONFIG_SHEET);
+  await sheetsClear(CONFIG_SHEET + '!A1:Z1000');
+  await sheetsWrite(CONFIG_SHEET + '!A1:B3', [
+    ['users',   JSON.stringify(db.users)],
+    ['modules', JSON.stringify(db.modules)],
+    ['fields',  JSON.stringify(db.fields)]
+  ]);
+}
+
+// ══════════════════════════════════════════════
+//  LOAD / SAVE RECORDS (one sheet per module)
+// ══════════════════════════════════════════════
+async function loadModuleRecords(modId) {
+  try {
+    const sheetName = 'data_' + modId;
+    const names = await getSheetNames();
+    if (!names.includes(sheetName)) return [];
+    const rows = await sheetsGet(sheetName + '!A1:ZZ10000');
+    if (rows.length < 2) return [];
+    const headers = rows[0];
+    return rows.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = row[i] || ''; });
+      return obj;
+    });
+  } catch { return []; }
+}
+
+async function saveModuleRecords(modId) {
+  const sheetName = 'data_' + modId;
+  await ensureSheet(sheetName);
+  await sheetsClear(sheetName + '!A1:ZZ10000');
+  const records = db.records[modId] || [];
+  if (!records.length) return;
+  const fields = db.fields[modId] || [];
+  const allKeys = ['_id', '_created', '_updated', ...fields.map(f => f.id)];
+  const header = allKeys;
+  const rows = records.map(r => allKeys.map(k => r[k] ?? ''));
+  await sheetsWrite(sheetName + '!A1', [header, ...rows]);
+}
+
+// ══════════════════════════════════════════════
+//  DEFAULT DB
+// ══════════════════════════════════════════════
+function defaultDB() {
+  return {
+    users: [
+      { id:'u1', username:'admin', password:'admin123', name:'Administrador', role:'admin',
+        modules:['dashboard','registro','consultas-psi','consultas-med','laboratorios','seguimiento','informes','modulos','usuarios'] },
+      { id:'u2', username:'psicologo', password:'psi123', name:'Dr. Ana García', role:'psicologo',
+        modules:['dashboard','registro','consultas-psi','seguimiento','informes'] },
+      { id:'u3', username:'medico', password:'med123', name:'Dr. Carlos López', role:'medico',
+        modules:['dashboard','registro','consultas-med','laboratorios','informes'] },
+    ],
+    modules: [
+      { id:'registro',      label:'Registro',               icon:'👤', desc:'Datos personales y demográficos', system:true, order:1 },
+      { id:'consultas-psi', label:'Consultas Psicológicas',  icon:'🧠', desc:'Sesiones y evolución terapéutica', system:true, order:2 },
+      { id:'consultas-med', label:'Consultas Médicas',       icon:'🩺', desc:'Registro de atenciones médicas', system:true, order:3 },
+      { id:'laboratorios',  label:'Laboratorios',            icon:'🔬', desc:'Exámenes y resultados', system:true, order:4 },
+      { id:'seguimiento',   label:'Seguimiento Académico',   icon:'📚', desc:'Rendimiento y evolución escolar', system:true, order:5 },
+      { id:'informes',      label:'Informes Médicos',        icon:'📄', desc:'Documentos clínicos', system:true, order:6 },
+    ],
+    records: { registro:[], 'consultas-psi':[], 'consultas-med':[], laboratorios:[], seguimiento:[], informes:[] },
+    fields: {
+      'registro': [
+        {id:'f1',label:'Nombre completo',type:'text',required:true,system:true},
+        {id:'f2',label:'Fecha de nacimiento',type:'date',required:true,system:true},
+        {id:'f3',label:'Edad',type:'number',required:false,system:true},
+        {id:'f4',label:'Sexo',type:'select',options:'Masculino,Femenino,Otro',required:false,system:true},
+        {id:'f5',label:'Documento de identidad',type:'text',required:false,system:false},
+        {id:'f6',label:'Teléfono',type:'text',required:false,system:false},
+        {id:'f7',label:'Correo electrónico',type:'text',required:false,system:false},
+        {id:'f8',label:'Dirección',type:'text',required:false,system:false},
+        {id:'f9',label:'Nombre del acudiente',type:'text',required:false,system:false},
+        {id:'f10',label:'Teléfono acudiente',type:'text',required:false,system:false},
+        {id:'f11',label:'Motivo de consulta',type:'textarea',required:false,system:false},
+        {id:'f12',label:'Observaciones',type:'textarea',required:false,system:false},
+      ],
+      'consultas-psi': [
+        {id:'cp1',label:'Paciente',type:'patient-ref',required:true,system:true},
+        {id:'cp2',label:'Fecha de consulta',type:'date',required:true,system:true},
+        {id:'cp3',label:'Psicólogo',type:'text',required:false,system:true},
+        {id:'cp4',label:'Motivo de consulta',type:'textarea',required:false,system:false},
+        {id:'cp5',label:'Diagnóstico (CIE-10)',type:'text',required:false,system:false},
+        {id:'cp6',label:'Intervención realizada',type:'textarea',required:false,system:false},
+        {id:'cp7',label:'Plan terapéutico',type:'textarea',required:false,system:false},
+        {id:'cp8',label:'Próxima cita',type:'date',required:false,system:false},
+      ],
+      'consultas-med': [
+        {id:'cm1',label:'Paciente',type:'patient-ref',required:true,system:true},
+        {id:'cm2',label:'Fecha',type:'date',required:true,system:true},
+        {id:'cm3',label:'Médico',type:'text',required:false,system:true},
+        {id:'cm4',label:'Motivo',type:'textarea',required:false,system:false},
+        {id:'cm5',label:'Diagnóstico',type:'text',required:false,system:false},
+        {id:'cm6',label:'Tratamiento',type:'textarea',required:false,system:false},
+        {id:'cm7',label:'Medicamentos',type:'textarea',required:false,system:false},
+      ],
+      'laboratorios': [
+        {id:'l1',label:'Paciente',type:'patient-ref',required:true,system:true},
+        {id:'l2',label:'Fecha',type:'date',required:true,system:true},
+        {id:'l3',label:'Tipo de examen',type:'text',required:false,system:false},
+        {id:'l4',label:'Resultados',type:'textarea',required:false,system:false},
+        {id:'l5',label:'Valores de referencia',type:'textarea',required:false,system:false},
+        {id:'l6',label:'Interpretación',type:'textarea',required:false,system:false},
+      ],
+      'seguimiento': [
+        {id:'s1',label:'Paciente',type:'patient-ref',required:true,system:true},
+        {id:'s2',label:'Fecha',type:'date',required:true,system:true},
+        {id:'s3',label:'Institución educativa',type:'text',required:false,system:false},
+        {id:'s4',label:'Grado / Nivel',type:'text',required:false,system:false},
+        {id:'s5',label:'Rendimiento académico',type:'select',options:'Excelente,Bueno,Regular,Bajo',required:false,system:false},
+        {id:'s6',label:'Comportamiento',type:'textarea',required:false,system:false},
+        {id:'s7',label:'Observaciones docentes',type:'textarea',required:false,system:false},
+        {id:'s8',label:'Plan de apoyo',type:'textarea',required:false,system:false},
+      ],
+      'informes': [
+        {id:'i1',label:'Paciente',type:'patient-ref',required:true,system:true},
+        {id:'i2',label:'Fecha',type:'date',required:true,system:true},
+        {id:'i3',label:'Tipo de informe',type:'select',options:'Psicológico,Médico,Académico,Interdisciplinario',required:false,system:false},
+        {id:'i4',label:'Profesional',type:'text',required:false,system:false},
+        {id:'i5',label:'Motivo',type:'textarea',required:false,system:false},
+        {id:'i6',label:'Hallazgos',type:'textarea',required:false,system:false},
+        {id:'i7',label:'Conclusiones',type:'textarea',required:false,system:false},
+        {id:'i8',label:'Recomendaciones',type:'textarea',required:false,system:false},
+      ]
+    }
+  };
+}
+
+let db = null;
+let currentUser = null;
+let currentSection = 'dashboard';
+let editingId = null;
+let editingModule = null;
+
+// ══════════════════════════════════════════════
+//  SYNC STATE
+// ══════════════════════════════════════════════
+function setSyncState(state, msg) {
+  const dot = document.getElementById('sync-dot');
+  const label = document.getElementById('sync-label');
+  if (!dot) return;
+  dot.className = 'sync-dot ' + state;
+  label.textContent = msg;
+}
+
+function showLoading(msg) {
+  document.getElementById('loading-overlay').style.display = 'flex';
+  document.getElementById('loading-msg').textContent = msg || 'Cargando…';
+}
+function hideLoading() { document.getElementById('loading-overlay').style.display = 'none'; }
+
+// ══════════════════════════════════════════════
+//  INITIAL LOAD FROM SHEETS
+// ══════════════════════════════════════════════
+async function initFromSheets() {
+  showLoading('Conectando con Google Sheets…');
+  setSyncState('syncing', 'Conectando…');
+  try {
+    const config = await loadConfig();
+    if (config && config.users && config.users.length) {
+      db = config;
+      // Load all module records
+      showLoading('Cargando registros…');
+      for (const mod of db.modules) {
+        db.records[mod.id] = await loadModuleRecords(mod.id);
+      }
+    } else {
+      // First run: save defaults
+      db = defaultDB();
+      showLoading('Primera vez: inicializando hojas…');
+      await saveConfig();
+      for (const mod of db.modules) {
+        await saveModuleRecords(mod.id);
+      }
+    }
+    setSyncState('ok', 'Sincronizado');
+    hideLoading();
+    return true;
+  } catch(e) {
+    setSyncState('error', 'Error de conexión');
+    hideLoading();
+    showToast('Error al conectar con Google Sheets: ' + e.message, 'error');
+    // Fallback to empty db
+    db = defaultDB();
+    return false;
+  }
+}
+
+async function syncAll() {
+  showLoading('Sincronizando…');
+  setSyncState('syncing', 'Sincronizando…');
+  try {
+    const config = await loadConfig();
+    if (config) {
+      db.users = config.users;
+      db.modules = config.modules;
+      db.fields = config.fields;
+      for (const mod of db.modules) {
+        db.records[mod.id] = await loadModuleRecords(mod.id);
+      }
+    }
+    setSyncState('ok', 'Sincronizado ' + new Date().toLocaleTimeString('es'));
+    hideLoading();
+    buildDynamicSections();
+    buildNav();
+    showSection(currentSection);
+    showToast('Datos sincronizados ✓', 'success');
+  } catch(e) {
+    setSyncState('error', 'Error');
+    hideLoading();
+    showToast('Error al sincronizar: ' + e.message, 'error');
+  }
+}
+
+// ══════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════
+async function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+
+  showLoading('Verificando credenciales…');
+  try {
+    await initFromSheets();
+  } catch(e) { /* fallback already handled */ }
+  hideLoading();
+
+  const user = db.users.find(x => x.username === u && x.password === p);
+  if (!user) { document.getElementById('login-error').style.display = 'block'; return; }
+  currentUser = user;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('sheets-link').href =
+    'https://docs.google.com/spreadsheets/d/' + SPREADSHEET_ID + '/edit';
+  initApp();
+}
+document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-error').style.display = 'none';
+}
+
+// ══════════════════════════════════════════════
+//  APP INIT
+// ══════════════════════════════════════════════
+function initApp() {
+  document.getElementById('sidebar-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+  document.getElementById('sidebar-name').textContent = currentUser.name;
+  const rt = document.getElementById('sidebar-role-tag');
+  rt.textContent = roleLabel(currentUser.role);
+  rt.className = 'role-tag role-' + currentUser.role;
+  buildDynamicSections();
+  buildNav();
+  showSection('dashboard');
+}
+
+function buildDynamicSections() {
+  const container = document.getElementById('dynamic-sections');
+  // Remove old dynamic sections
+  container.innerHTML = '';
+  db.modules.forEach(mod => {
+    const sec = document.createElement('div');
+    sec.className = 'section'; sec.id = 'sec-' + mod.id;
+    sec.innerHTML = `
+      <div class="page-header">
+        <div><h1>${mod.icon} ${mod.label}</h1><p>${mod.desc}</p></div>
+        <div class="page-header-actions">
+          <button class="btn btn-ghost btn-sm" onclick="manageFields('${mod.id}')">⚙ Campos</button>
+          <button class="btn btn-primary" onclick="openModal('${mod.id}')">+ Nuevo registro</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="toolbar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-${mod.id}" placeholder="Buscar…" oninput="renderModuleTable('${mod.id}')">
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr id="${mod.id}-thead"></tr></thead>
+            <tbody id="${mod.id}-tbody"></tbody>
+          </table>
+        </div>
+      </div>`;
+    container.appendChild(sec);
+  });
+}
+
+function buildNav() {
+  const mods = currentUser.modules;
+  const nav = document.getElementById('main-nav');
+  nav.innerHTML = '';
+  nav.innerHTML += '<div class="nav-section-label">General</div>';
+  if (mods.includes('dashboard')) nav.innerHTML += navItem('dashboard','🏠','Panel Principal');
+  const clinicalMods = db.modules.filter(m => mods.includes(m.id));
+  if (clinicalMods.length) {
+    nav.innerHTML += '<div class="nav-section-label">Módulos Clínicos</div>';
+    clinicalMods.forEach(m => { nav.innerHTML += navItem(m.id, m.icon, m.label); });
+  }
+  const adminItems = [];
+  if (mods.includes('modulos')) adminItems.push(navItem('modulos','🗂','Gestión de Módulos'));
+  if (mods.includes('usuarios')) adminItems.push(navItem('usuarios','👥','Usuarios y Accesos'));
+  if (adminItems.length) {
+    nav.innerHTML += '<div class="nav-section-label">Administración</div>' + adminItems.join('');
+  }
+}
+
+function navItem(id, icon, label) {
+  return `<div class="nav-item" id="nav-${id}" onclick="showSection('${id}')">
+    <span class="nav-icon">${icon}</span>${label}</div>`;
+}
+
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const sec = document.getElementById('sec-' + name);
+  if (sec) sec.classList.add('active');
+  const navEl = document.getElementById('nav-' + name);
+  if (navEl) navEl.classList.add('active');
+  currentSection = name;
+  if (name === 'dashboard') renderDashboard();
+  else if (name === 'usuarios') renderUsersTable();
+  else if (name === 'modulos') renderModuleGrid();
+  else renderModuleTable(name);
+}
+
+// ══════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════
+function calcAge(dob) {
+  if (!dob) return '';
+  const b = new Date(dob), n = new Date();
+  let a = n.getFullYear() - b.getFullYear();
+  if (n.getMonth() - b.getMonth() < 0 || (n.getMonth()===b.getMonth() && n.getDate()<b.getDate())) a--;
+  return a>=0 && a<130 ? a : '';
+}
+
+function renderDashboard() {
+  const colors = ['green','orange','blue','purple'];
+  document.getElementById('dashboard-stats').innerHTML =
+    db.modules.slice(0,4).map((m,i) => `
+      <div class="stat-card">
+        <div class="stat-icon ${colors[i]}">${m.icon}</div>
+        <div><div class="stat-number">${(db.records[m.id]||[]).length}</div>
+        <div class="stat-label">${m.label}</div></div>
+      </div>`).join('');
+
+  const patients = [...(db.records['registro']||[])].reverse().slice(0,8);
+  const tbody = document.getElementById('recent-patients-table');
+  tbody.innerHTML = patients.length ? patients.map(p => `<tr>
+    <td><strong>${esc(p['f1']||'—')}</strong></td>
+    <td>${calcAge(p['f2']) ? calcAge(p['f2'])+' años' : '—'}</td>
+    <td>${p._created ? new Date(Number(p._created)).toLocaleDateString('es') : '—'}</td>
+    <td><button class="btn btn-ghost btn-sm" onclick="showSection('registro')">Ver</button></td>
+  </tr>`).join('') : `<tr><td colspan="4">
+    <div class="empty-state"><div class="empty-icon">📋</div><p>Sin pacientes aún</p></div></td></tr>`;
+}
+
+// ══════════════════════════════════════════════
+//  MODULE TABLE
+// ══════════════════════════════════════════════
+function renderModuleTable(mod) {
+  if (!db.fields[mod]) db.fields[mod] = [];
+  if (!db.records[mod]) db.records[mod] = [];
+  const fields = db.fields[mod];
+  const searchVal = (document.getElementById('search-'+mod)||{}).value || '';
+  const cols = fields.slice(0,5);
+  const thead = document.getElementById(mod+'-thead');
+  if (thead) thead.innerHTML = cols.map(f=>`<th>${esc(f.label)}</th>`).join('') + '<th>Acciones</th>';
+  const tbody = document.getElementById(mod+'-tbody');
+  if (!tbody) return;
+  let filtered = db.records[mod];
+  if (searchVal) { const q=searchVal.toLowerCase(); filtered=filtered.filter(r=>Object.values(r).some(v=>String(v).toLowerCase().includes(q))); }
+  if (!filtered.length) {
+    tbody.innerHTML=`<tr><td colspan="${cols.length+1}"><div class="empty-state"><div class="empty-icon">📁</div>
+      <p>Sin registros</p><small>Haz clic en "+ Nuevo registro"</small></div></td></tr>`; return;
+  }
+  tbody.innerHTML = filtered.map(rec => {
+    const cells = cols.map(f => {
+      let val = rec[f.id] ?? '—';
+      if (f.type==='patient-ref') { const p=(db.records['registro']||[]).find(x=>x._id===val); val=p?(p['f1']||val):val; }
+      if (f.type==='date' && val && val!=='—') { try{val=new Date(val+'T00:00:00').toLocaleDateString('es');}catch{} }
+      if (String(val).length>38) val=String(val).substring(0,38)+'…';
+      return `<td>${esc(val)}</td>`;
+    }).join('');
+    return `<tr>${cells}<td><div class="table-actions">
+      <button class="btn btn-ghost btn-sm" onclick="openModal('${mod}','${rec._id}')">✏ Editar</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteRecord('${mod}','${rec._id}')">🗑</button>
+    </div></td></tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  RECORD CRUD
+// ══════════════════════════════════════════════
+function openModal(mod, id) {
+  editingModule = mod; editingId = id || null;
+  if (!db.fields[mod]) db.fields[mod] = [];
+  const fields = db.fields[mod];
+  const record = id ? (db.records[mod]||[]).find(r=>r._id===id) : null;
+  const modMeta = db.modules.find(m=>m.id===mod);
+  document.getElementById('modal-title').textContent = record
+    ? `✏ Editar — ${modMeta?.label||mod}` : `+ Nuevo — ${modMeta?.label||mod}`;
+  let html = '<div class="form-grid">';
+  fields.forEach(f => {
+    const val = record ? (record[f.id]??'') : '';
+    html += `<div class="form-group ${f.type==='textarea'?'span2':''}">
+      <label>${esc(f.label)}${f.required?' *':''}</label>`;
+    if (f.type==='textarea') html+=`<textarea class="form-control" id="field-${f.id}" ${f.required?'required':''}>${esc(val)}</textarea>`;
+    else if (f.type==='select') {
+      const opts=(f.options||'').split(',').map(o=>o.trim());
+      html+=`<select id="field-${f.id}" ${f.required?'required':''}><option value="">— Seleccionar —</option>
+        ${opts.map(o=>`<option ${val===o?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+    } else if (f.type==='patient-ref') {
+      const patients=db.records['registro']||[];
+      html+=`<select id="field-${f.id}" ${f.required?'required':''}><option value="">— Seleccionar paciente —</option>
+        ${patients.map(p=>`<option value="${p._id}" ${val===p._id?'selected':''}>${esc(p['f1']||p._id)}</option>`).join('')}</select>`;
+    } else {
+      const itype=f.type==='number'?'number':f.type==='date'?'date':'text';
+      html+=`<input type="${itype}" id="field-${f.id}" value="${esc(val)}" placeholder="${esc(f.label)}" ${f.required?'required':''}>`;
+    }
+    html += '</div>';
+  });
+  html += '</div>';
+  if (!fields.length) html=`<div class="empty-state"><div class="empty-icon">⚙</div><p>Sin campos configurados</p><small>Ve a "⚙ Campos" para agregar</small></div>`;
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal-footer').innerHTML = `
+    <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="saveRecord()">💾 Guardar en Sheets</button>`;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+async function saveRecord() {
+  const mod = editingModule;
+  if (!db.fields[mod]) db.fields[mod]=[];
+  if (!db.records[mod]) db.records[mod]=[];
+  const fields = db.fields[mod];
+  const newRec = {};
+  for (const f of fields) {
+    const el = document.getElementById('field-'+f.id);
+    if (!el) continue;
+    const val = el.value.trim();
+    if (f.required && !val) { showToast('El campo "'+f.label+'" es obligatorio.','error'); el.focus(); return; }
+    newRec[f.id] = val;
+  }
+  if (editingId) {
+    const idx = db.records[mod].findIndex(r=>r._id===editingId);
+    if (idx!==-1) { newRec._id=editingId; newRec._created=db.records[mod][idx]._created; newRec._updated=Date.now(); db.records[mod][idx]=newRec; }
+  } else {
+    newRec._id='r'+Date.now(); newRec._created=Date.now(); db.records[mod].push(newRec);
+  }
+  closeModal();
+  renderModuleTable(mod); renderDashboard();
+  showToast('Guardando en Google Sheets…','info');
+  setSyncState('syncing','Guardando…');
+  try {
+    await saveModuleRecords(mod);
+    setSyncState('ok','Guardado ✓');
+    showToast(editingId?'Registro actualizado ✓':'Registro guardado ✓','success');
+  } catch(e) {
+    setSyncState('error','Error al guardar');
+    showToast('Error al guardar en Sheets: '+e.message,'error');
+  }
+}
+
+async function deleteRecord(mod, id) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  db.records[mod] = db.records[mod].filter(r=>r._id!==id);
+  renderModuleTable(mod); renderDashboard();
+  setSyncState('syncing','Guardando…');
+  try {
+    await saveModuleRecords(mod);
+    setSyncState('ok','Guardado ✓');
+    showToast('Registro eliminado','success');
+  } catch(e) { setSyncState('error','Error'); showToast('Error al eliminar: '+e.message,'error'); }
+}
+
+// ══════════════════════════════════════════════
+//  FIELD MANAGER
+// ══════════════════════════════════════════════
+function manageFields(mod) {
+  editingModule = mod;
+  const modMeta = db.modules.find(m=>m.id===mod);
+  document.getElementById('modal-title').textContent = '⚙ Campos — '+(modMeta?.label||mod);
+  if (!db.fields[mod]) db.fields[mod]=[];
+  function renderBody() {
+    const fields = db.fields[mod];
+    return `<div style="margin-bottom:16px">
+      ${!fields.length?'<p style="color:var(--mid-gray);font-size:13px;text-align:center;padding:16px">Sin campos. Agrega uno abajo.</p>':
+        fields.map(f=>`<div class="custom-field-item">
+          <span>${f.type==='textarea'?'📝':f.type==='date'?'📅':f.type==='select'?'☰':f.type==='patient-ref'?'👤':'T'}</span>
+          <span class="field-label">${esc(f.label)}</span>
+          <span class="field-type">${f.type}</span>
+          ${f.required?'<span class="badge badge-orange" style="font-size:10px">Req.</span>':''}
+          ${f.system?'<span class="badge badge-gray" style="font-size:10px">Sistema</span>':
+            `<button class="btn btn-danger btn-sm" style="padding:4px 10px;margin-left:auto" onclick="removeField('${mod}','${f.id}')">✕</button>`}
+        </div>`).join('')}
+    </div>
+    <div class="field-builder">
+      <p style="font-size:12px;font-weight:600;color:var(--sage-dark);margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em">Agregar campo</p>
+      <div class="form-grid" style="grid-template-columns:1fr 1fr">
+        <div class="form-group"><label>Nombre del campo</label>
+          <input type="text" id="new-field-label" placeholder="Ej: Antecedentes"></div>
+        <div class="form-group"><label>Tipo</label>
+          <select id="new-field-type" onchange="toggleOptionsRow()">
+            <option value="text">Texto corto</option>
+            <option value="textarea">Texto largo</option>
+            <option value="date">Fecha</option>
+            <option value="number">Número</option>
+            <option value="select">Lista de opciones</option>
+            <option value="patient-ref">Referencia a paciente</option>
+          </select></div>
+        <div class="form-group span2" id="options-row" style="display:none">
+          <label>Opciones (separadas por coma)</label>
+          <input type="text" id="new-field-options" placeholder="Opción A,Opción B"></div>
+        <div class="form-group span2" style="display:flex;align-items:center;gap:10px">
+          <input type="checkbox" id="new-field-req" style="width:auto;cursor:pointer">
+          <label for="new-field-req" style="text-transform:none;font-size:13px;font-weight:400;margin:0;cursor:pointer">Obligatorio</label>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:4px" onclick="addField('${mod}')">+ Agregar campo</button>
+    </div>`;
+  }
+  document.getElementById('modal-body').innerHTML = renderBody();
+  document.getElementById('modal-footer').innerHTML = `<button class="btn btn-secondary" onclick="closeModal()">Cerrar</button>`;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function toggleOptionsRow() {
+  const row = document.getElementById('options-row');
+  if (row) row.style.display = document.getElementById('new-field-type').value==='select'?'block':'none';
+}
+
+async function addField(mod) {
+  const label = document.getElementById('new-field-label').value.trim();
+  const type = document.getElementById('new-field-type').value;
+  const options = document.getElementById('new-field-options')?.value||'';
+  const req = document.getElementById('new-field-req').checked;
+  if (!label) { showToast('Escribe un nombre','error'); return; }
+  db.fields[mod].push({ id:'cf_'+Date.now(), label, type, options:type==='select'?options:undefined, required:req, system:false });
+  await saveConfig();
+  manageFields(mod);
+  showToast('"'+label+'" agregado ✓','success');
+}
+
+async function removeField(mod, fid) {
+  if (!confirm('¿Eliminar este campo?')) return;
+  db.fields[mod] = db.fields[mod].filter(f=>f.id!==fid);
+  await saveConfig();
+  manageFields(mod);
+  showToast('Campo eliminado','success');
+}
+
+// ══════════════════════════════════════════════
+//  MODULE MANAGER
+// ══════════════════════════════════════════════
+function renderModuleGrid() {
+  document.getElementById('module-grid').innerHTML = db.modules.map(m=>`
+    <div class="module-card">
+      <div class="module-card-header">
+        <div class="module-card-icon">${m.icon}</div>
+        <div><div class="module-card-title">${esc(m.label)}</div>
+          ${m.system?'<span class="system-badge">Sistema</span>':''}</div>
+      </div>
+      <div class="module-card-desc">${esc(m.desc)}</div>
+      <div style="font-size:12px;color:var(--mid-gray)">${(db.records[m.id]||[]).length} registros · ${(db.fields[m.id]||[]).length} campos</div>
+      <div class="module-card-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openEditModuleModal('${m.id}')">✏ Editar</button>
+        <button class="btn btn-ghost btn-sm" onclick="showSection('${m.id}')">→ Ir</button>
+        ${!m.system?`<button class="btn btn-danger btn-sm" onclick="deleteModule('${m.id}')">🗑</button>`:''}
+      </div>
+    </div>`).join('');
+}
+
+const MODULE_ICONS = ['📋','🗒','📊','📈','💊','🩹','🏥','🧬','🫀','🧪','📝','🗂','📌','🔖','💡','🔍','📅','🩺','🧠','📚','🔬','📄','👤','💬','🎯'];
+
+function moduleFormHTML(mod) {
+  return `<div class="form-grid">
+    <div class="form-group"><label>Nombre *</label>
+      <input type="text" id="mod-label" value="${esc(mod?.label||'')}" placeholder="Ej: Nutrición"></div>
+    <div class="form-group"><label>Ícono</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="text" id="mod-icon" value="${esc(mod?.icon||'📋')}" style="width:60px;font-size:20px;text-align:center">
+        <div style="display:flex;flex-wrap:wrap;gap:3px;flex:1">
+          ${MODULE_ICONS.map(ic=>`<button type="button" onclick="document.getElementById('mod-icon').value='${ic}'"
+            style="background:none;border:1px solid var(--light-gray);border-radius:5px;padding:3px 5px;cursor:pointer;font-size:15px">${ic}</button>`).join('')}
+        </div>
+      </div></div>
+    <div class="form-group span2"><label>Descripción</label>
+      <input type="text" id="mod-desc" value="${esc(mod?.desc||'')}" placeholder="Descripción breve"></div>
+  </div>`;
+}
+
+function openNewModuleModal() {
+  document.getElementById('modal-title').textContent = '+ Nuevo módulo';
+  document.getElementById('modal-body').innerHTML = moduleFormHTML();
+  document.getElementById('modal-footer').innerHTML = `
+    <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="saveModule()">💾 Crear módulo</button>`;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+function openEditModuleModal(id) {
+  const mod = db.modules.find(m=>m.id===id);
+  document.getElementById('modal-title').textContent = '✏ Editar módulo';
+  document.getElementById('modal-body').innerHTML = moduleFormHTML(mod);
+  document.getElementById('modal-footer').innerHTML = `
+    <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="saveModule('${id}')">💾 Guardar</button>`;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+async function saveModule(existingId) {
+  const label = document.getElementById('mod-label').value.trim();
+  const icon = document.getElementById('mod-icon').value.trim()||'📋';
+  const desc = document.getElementById('mod-desc').value.trim();
+  if (!label) { showToast('El nombre es obligatorio','error'); return; }
+  if (existingId) {
+    const idx = db.modules.findIndex(m=>m.id===existingId);
+    if (idx!==-1) { db.modules[idx].label=label; db.modules[idx].icon=icon; db.modules[idx].desc=desc; }
+  } else {
+    const id = 'mod_'+Date.now();
+    db.modules.push({ id, label, icon, desc, system:false, order:db.modules.length+1 });
+    db.records[id] = [];
+    db.fields[id] = [
+      {id:'mf1',label:'Paciente',type:'patient-ref',required:true,system:true},
+      {id:'mf2',label:'Fecha',type:'date',required:true,system:true},
+    ];
+    const admin = db.users.find(u=>u.role==='admin');
+    if (admin && !admin.modules.includes(id)) admin.modules.push(id);
+    await ensureSheet('data_'+id);
+  }
+  setSyncState('syncing','Guardando…');
+  await saveConfig();
+  setSyncState('ok','Guardado ✓');
+  closeModal(); buildDynamicSections(); buildNav(); renderModuleGrid();
+  showToast(existingId?'Módulo actualizado ✓':'Módulo "'+label+'" creado ✓','success');
+}
+
+async function deleteModule(id) {
+  const mod = db.modules.find(m=>m.id===id);
+  const recCount = (db.records[id]||[]).length;
+  if (!confirm(`¿Eliminar "${mod?.label}"?${recCount>0?' Tiene '+recCount+' registros que también se eliminarán.':''}`)) return;
+  db.modules = db.modules.filter(m=>m.id!==id);
+  delete db.records[id]; delete db.fields[id];
+  db.users.forEach(u=>{ u.modules=u.modules.filter(m=>m!==id); });
+  setSyncState('syncing','Guardando…');
+  await saveConfig();
+  setSyncState('ok','Guardado ✓');
+  const sec = document.getElementById('sec-'+id);
+  if (sec) sec.remove();
+  buildNav(); renderModuleGrid(); showSection('modulos');
+  showToast('Módulo eliminado','success');
+}
+
+// ══════════════════════════════════════════════
+//  USER MANAGER
+// ══════════════════════════════════════════════
+function roleLabel(r) {
+  return {admin:'Administrador',psicologo:'Psicólogo',medico:'Médico',otro:'Otro'}[r]||r;
+}
+
+function renderUsersTable() {
+  document.getElementById('users-tbody').innerHTML = db.users.map(u => {
+    const mods = u.modules.filter(m=>!['dashboard','modulos','usuarios'].includes(m))
+      .map(m=>{ const mod=db.modules.find(mo=>mo.id===m); return mod?mod.icon+' '+mod.label:m; }).join(', ')||'—';
+    return `<tr>
+      <td><code style="background:var(--light-gray);padding:2px 8px;border-radius:4px;font-size:12px">${esc(u.username)}</code></td>
+      <td><strong>${esc(u.name)}</strong></td>
+      <td><span class="role-tag role-${u.role}">${roleLabel(u.role)}</span></td>
+      <td style="font-size:12px;color:var(--mid-gray);max-width:300px">${mods}</td>
+      <td><div class="table-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openUserModal('${u.id}')">✏ Editar</button>
+        ${u.id==='u1'?'':`<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')">🗑</button>`}
+      </div></td></tr>`;
+  }).join('');
+}
+
+function openUserModal(uid) {
+  const user = uid ? db.users.find(u=>u.id===uid) : null;
+  document.getElementById('modal-title').textContent = user?'✏ Editar usuario':'+ Nuevo usuario';
+  const userMods = user ? user.modules : ['dashboard'];
+  const systemMods = [{id:'dashboard',icon:'🏠',label:'Panel Principal'},{id:'modulos',icon:'🗂',label:'Gestión de Módulos'},{id:'usuarios',icon:'👥',label:'Usuarios y Accesos'}];
+  const allMods = [...systemMods, ...db.modules];
+  document.getElementById('modal-body').innerHTML = `<div class="form-grid">
+    <div class="form-group"><label>Nombre completo *</label><input type="text" id="u-name" value="${esc(user?.name||'')}"></div>
+    <div class="form-group"><label>Rol *</label><select id="u-role">
+      <option value="admin" ${user?.role==='admin'?'selected':''}>Administrador</option>
+      <option value="psicologo" ${user?.role==='psicologo'?'selected':''}>Psicólogo</option>
+      <option value="medico" ${user?.role==='medico'?'selected':''}>Médico</option>
+      <option value="otro" ${user?.role==='otro'?'selected':''}>Otro</option></select></div>
+    <div class="form-group"><label>Usuario *</label><input type="text" id="u-username" value="${esc(user?.username||'')}"></div>
+    <div class="form-group"><label>Contraseña ${user?'(vacío = no cambiar)':'*'}</label><input type="password" id="u-pass" placeholder="••••••••"></div>
+    <div class="form-group span2"><label>Módulos con acceso</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        ${allMods.map(m=>`<label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:400;text-transform:none;cursor:pointer">
+          <input type="checkbox" class="u-mod" value="${m.id}" ${userMods.includes(m.id)?'checked':''} ${m.id==='dashboard'?'disabled':''}
+            style="width:auto;cursor:pointer"><span>${m.icon} ${esc(m.label)}</span></label>`).join('')}
+      </div></div></div>`;
+  document.getElementById('modal-footer').innerHTML = `
+    <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+    <button class="btn btn-primary" onclick="saveUser('${uid||''}')">💾 Guardar</button>`;
+  document.getElementById('modal-overlay').style.display = 'flex';
+}
+
+async function saveUser(uid) {
+  const name = document.getElementById('u-name').value.trim();
+  const role = document.getElementById('u-role').value;
+  const username = document.getElementById('u-username').value.trim();
+  const pass = document.getElementById('u-pass').value;
+  const mods = ['dashboard',...Array.from(document.querySelectorAll('.u-mod:checked')).map(c=>c.value).filter(v=>v!=='dashboard')];
+  if (!name||!username) { showToast('Nombre y usuario son obligatorios','error'); return; }
+  if (!uid&&!pass) { showToast('La contraseña es obligatoria','error'); return; }
+  if (db.users.find(u=>u.username===username&&u.id!==uid)) { showToast('Ese usuario ya existe','error'); return; }
+  if (uid) {
+    const idx = db.users.findIndex(u=>u.id===uid);
+    if (idx!==-1) { db.users[idx]={...db.users[idx],name,role,username,modules:mods}; if(pass) db.users[idx].password=pass; }
+  } else {
+    db.users.push({id:'u'+Date.now(),username,password:pass,name,role,modules:mods});
+  }
+  setSyncState('syncing','Guardando…');
+  await saveConfig();
+  setSyncState('ok','Guardado ✓');
+  closeModal(); renderUsersTable();
+  showToast(uid?'Usuario actualizado ✓':'Usuario creado ✓','success');
+}
+
+async function deleteUser(uid) {
+  if (uid===currentUser.id) { showToast('No puedes eliminarte a ti mismo','error'); return; }
+  if (!confirm('¿Eliminar este usuario?')) return;
+  db.users = db.users.filter(u=>u.id!==uid);
+  setSyncState('syncing','Guardando…');
+  await saveConfig();
+  setSyncState('ok','Guardado ✓');
+  renderUsersTable();
+  showToast('Usuario eliminado','success');
+}
+
+// ══════════════════════════════════════════════
+//  MODAL HELPERS
+// ══════════════════════════════════════════════
+function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; }
+function closeModalOnOverlay(e) { if(e.target.id==='modal-overlay') closeModal(); }
+
+// ══════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════
+function showToast(msg, type='success') {
+  const t = document.createElement('div');
+  t.className = 'toast '+type; t.textContent = msg;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(()=>t.remove(), 3500);
+}
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
